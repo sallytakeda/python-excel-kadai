@@ -1,0 +1,69 @@
+!pip install numpy
+!pip install pandas
+!pip install openpyxl
+
+from openpyxl import Workbook
+from openpyxl.styles import Alignment, Font
+from datetime import datetime
+
+# 新しいExcelファイル作成
+wb = Workbook()
+ws = wb.active
+
+# データ入力
+ws["B2"] = "請求書"
+ws["B4"] = "株式会社ABC"
+ws["B5"] = "〒101-0022 東京都千代田区神田練塀町300"
+ws["B6"] = "TEL:03-1234-5678 FAX:03-1234-5678"
+ws["B7"] = "担当者名:鈴木一郎 様"
+
+ws["F4"] = "No."
+ws["G4"] = "0001"
+
+# ★追加部分：現在の日付をF5に入力
+today = datetime.today().strftime("%Y-%m-%d")  # 例: 2025-08-29
+ws["F5"] = "日付"
+ws["G5"] = today
+
+# 表ヘッダー
+ws["B10"] = "商品名"
+ws["C10"] = "数量"
+ws["D10"] = "単価"
+ws["E10"] = "金額"
+
+# 商品明細
+ws["B11"] = "商品A"
+ws["C11"] = 2
+ws["D11"] = 10000
+ws["E11"] = 20000
+
+ws["B12"] = "商品B"
+ws["C12"] = 1
+ws["D12"] = 15000
+ws["E12"] = 15000
+
+# 小計
+ws["E13"] = 35000
+
+# 合計部分
+ws["B15"] = "合計"
+ws["E15"] = 35000
+
+ws["B16"] = "消費税"
+ws["E16"] = 3500
+
+ws["B17"] = "税込合計"
+ws["E17"] = 38500
+
+# 書式設定（中央揃えやタイトルを大きく）
+ws["B2"].font = Font(size=16, bold=True)
+ws["B2"].alignment = Alignment(horizontal="center")
+ws.merge_cells("B2:E2")
+
+# セル結合（B5:E5, B6:E6, B7:E7）
+ws.merge_cells("B5:E5")
+ws.merge_cells("B6:E6")
+ws.merge_cells("B7:E7")
+
+# 保存
+wb.save("請求書_20250829.xlsx")
