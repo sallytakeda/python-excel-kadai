@@ -1,0 +1,31 @@
+import pandas as pd
+from openpyxl import load_workbook
+from openpyxl.styles import PatternFill
+
+# ====== 1. pandasでデータ読み込みと集計 ======
+# 2022年・2023年データを読み込み
+df_2022 = pd.read_excel("2022_年間売上表.xlsx", sheet_name="Sheet1")
+df_2023 = pd.read_excel("2023_年間売上表.xlsx", sheet_name="Sheet1")
+
+# データ連結
+df_all = pd.concat([df_2022, df_2023], ignore_index=True)
+
+# 「商品」「売上年」でグループ化して合計
+df_grouped = df_all.groupby(["商品", "売上年"], as_index=False)["金額（千円）"].sum()
+
+# ====== 2. Excelに書き込み ======
+output_file = "売上集計表.xlsx"
+df_grouped.to_excel(output_file, index=False)
+
+# ====== 3. openpyxlでヘッダー部分をフォーマット設定 ======
+# 保存したファイルを開く
+wb = load_workbook(output_file)
+ws = wb.active
+
+# ヘッダー行を薄いグレー（#F2F2F2）に設定
+fill = PatternFill(start_color="F2F2F2", end_color="F2F2F2", fill_type="solid")
+for cell in ws[1]:  # 1行目（ヘッダー）
+    cell.fill = fill
+
+# ====== 4. 保存 ======
+wb.save(output_file)
